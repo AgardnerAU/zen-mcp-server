@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   redis:
     image: redis:7-alpine
@@ -25,35 +27,29 @@ services:
     depends_on:
       - redis
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - XAI_API_KEY=${XAI_API_KEY:-}
-      # OpenRouter support
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
-      - CUSTOM_MODELS_CONFIG_PATH=${CUSTOM_MODELS_CONFIG_PATH:-}
-      # Custom API endpoint support (for Ollama, vLLM, etc.)
-      - CUSTOM_API_URL=${CUSTOM_API_URL:-}
-      - CUSTOM_API_KEY=${CUSTOM_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - CUSTOM_MODELS_CONFIG_PATH=${CUSTOM_MODELS_CONFIG_PATH}
+      - CUSTOM_API_URL=${CUSTOM_API_URL}
+      - CUSTOM_API_KEY=${CUSTOM_API_KEY}
       - CUSTOM_MODEL_NAME=${CUSTOM_MODEL_NAME:-llama3.2}
       - DEFAULT_MODEL=${DEFAULT_MODEL:-auto}
       - DEFAULT_THINKING_MODE_THINKDEEP=${DEFAULT_THINKING_MODE_THINKDEEP:-high}
       - CONVERSATION_TIMEOUT_HOURS=${CONVERSATION_TIMEOUT_HOURS:-3}
       - MAX_CONVERSATION_TURNS=${MAX_CONVERSATION_TURNS:-20}
-      # Model usage restrictions
-      - OPENAI_ALLOWED_MODELS=${OPENAI_ALLOWED_MODELS:-}
-      - GOOGLE_ALLOWED_MODELS=${GOOGLE_ALLOWED_MODELS:-}
-      - XAI_ALLOWED_MODELS=${XAI_ALLOWED_MODELS:-}
+      - OPENAI_ALLOWED_MODELS=${OPENAI_ALLOWED_MODELS}
+      - GOOGLE_ALLOWED_MODELS=${GOOGLE_ALLOWED_MODELS}
+      - XAI_ALLOWED_MODELS=${XAI_ALLOWED_MODELS}
       - REDIS_URL=redis://redis:6379/0
-      # Use HOME not PWD: Claude needs access to any absolute file path, not just current project,
-      # and Claude Code could be running from multiple locations at the same time
-      - WORKSPACE_ROOT=${WORKSPACE_ROOT:-${HOME}}
-      # USER_HOME helps detect and protect against scanning the home directory root
+      - WORKSPACE_ROOT=${WORKSPACE_ROOT}
       - USER_HOME=${HOME}
       - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
       - PYTHONUNBUFFERED=1
     volumes:
-      - ${WORKSPACE_ROOT:-${HOME}}:/workspace:ro
-      - mcp_logs:/tmp  # Shared volume for logs
+      - ${WORKSPACE_ROOT}:/workspace:ro
+      - mcp_logs:/tmp
       - /etc/localtime:/etc/localtime:ro
     stdin_open: true
     tty: true
@@ -71,7 +67,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - mcp_logs:/tmp  # Shared volume for logs
+      - mcp_logs:/tmp
       - /etc/localtime:/etc/localtime:ro
     entrypoint: ["python"]
     command: ["log_monitor.py"]
